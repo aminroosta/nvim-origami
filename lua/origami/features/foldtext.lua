@@ -119,6 +119,18 @@ local function renderFoldedSegments(win, buf, foldstart)
 	local leftcol = wininfo and wininfo.leftcol or 0 ---@diagnostic disable-line: undefined-field
 	local wincol = math.max(0, vim.fn.virtcol { foldstart, line:len() } - leftcol)
 
+
+	table.insert(virtText, 1, { "| " })
+	table.insert(virtText, { " |" })
+	local virtTextLength = string.len(vim.iter(virtText):map(function(x) return x[1] end):join(""))
+	local foldchar = "─"
+	local rpad = vim.bo.filetype == "markdown" and 6 or 2;
+	table.insert(virtText, 1, { string.rep(foldchar, vim.fn.winwidth(0) - string.len(line) - virtTextLength - rpad - 1 ) })
+	table.insert(virtText, 1, { " " })
+	table.insert(virtText, { string.rep(foldchar, rpad) })
+
+	-- vim.print(virtText)
+
 	vim.api.nvim_buf_set_extmark(buf, ns, foldstart - 1, 0, {
 		virt_text = virtText,
 		virt_text_win_col = wincol,
